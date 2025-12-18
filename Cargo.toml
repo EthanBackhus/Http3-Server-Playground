@@ -1,0 +1,23 @@
+[package]
+name = "test-servers"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+hyper = { version = "0.14", features = ["server", "http2"] }
+quinn = { version = "0.11", default-features = false, features = ["rustls", "runtime-tokio"] }
+rustls = {version = "0.23",default-features = false, features = ["ring"]}
+rcgen = { version = "0.14", features = ["crypto"] }
+
+[[bin]]
+name = "quic-server"
+path = "src/bin/servers/quic_server.rs"
+
+[[bin]]
+name = "http2-server"
+path = "src/bin/servers/http2_server.rs"
+
+[[bin]]
+name = "quic-client"
+path = "src/bin/clients/quic_client.rs"
