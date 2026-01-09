@@ -9,6 +9,11 @@ hyper = { version = "0.14", features = ["server", "http2"] }
 quinn = { version = "0.11", default-features = false, features = ["rustls", "runtime-tokio"] }
 rustls = {version = "0.23",default-features = false, features = ["ring"]}
 rcgen = { version = "0.14", features = ["crypto"] }
+h3-quinn = "0.0.10"
+anyhow = "1.0.100"
+h3 = "0.0.8"
+bytes = "1.11.0"
+http = "1.4.0"
 
 [[bin]]
 name = "quic-server"
@@ -21,3 +26,11 @@ path = "src/bin/servers/http2_server.rs"
 [[bin]]
 name = "quic-client"
 path = "src/bin/clients/quic_client.rs"
+
+[[bin]]
+name = "h3-quinn-server"
+path = "src/bin/servers/h3_quinn_server.rs"
+
+[[bin]]
+name = "h3-quinn-client"
+path = "src/bin/clients/h3_quinn_client.rs"
