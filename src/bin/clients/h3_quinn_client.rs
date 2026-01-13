@@ -1,4 +1,4 @@
-use bytes::Bytes;
+use bytes::Buf;
 use h3::client;
 use h3_quinn::Connection;
 use quinn::{ClientConfig, Endpoint};
@@ -41,27 +41,31 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // - open control streams
     // - negotiate settings
     // - initialize QPACK
-    let mut h3 = client::new(quic_conn).await?;
+    let mut h3  = client::new(quic_conn).await?;
 
     println!("HTTP/3 connected");
 
-    let mut request_stream = h3.open
-
     // Send HTTP/3 request (REPLACES open_bi)
-    let (mut request_stream, response) = h3.send_request(
+    let mut request_stream = h3.1.send_request(
             http::Request::builder()
                 .method("GET")
                 .uri("https://localhost/")
-                .body(())?,
-            false, // end_of_stream: no request body
+                .body(())?
         )
         .await?;
 
+    // finish request body
+    request_stream.finish().await?;
+
+    // receive response headers
+    let response = request_stream.recv_response().await?;
+
     println!("status: {}", response.status());
 
-    // Receive HTTP/3 DATA frames
-    while let Some(chunk) = stream.recv_data().await? {
-        print!("{}", String::from_utf8_lossy(chunk.chunk()));
+    // receive HTTP/3 data frames
+    while let Some(mut chunk) = request_stream.recv_data().await? {
+        let bytes = chunk.copy_to_bytes(chunk.remaining());
+        print!("{}", String::from_utf8_lossy(&bytes));
     }
 
     Ok(())
